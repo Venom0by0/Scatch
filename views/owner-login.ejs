@@ -1,0 +1,41 @@
+<%- include('./partials/header') %>
+
+    <main class="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-10 flex items-center justify-center bg-gradient-to-br from-zinc-100 via-white to-brand-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-brand-950 transition-colors duration-300">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <span class="inline-flex w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-500/20 items-center justify-center text-brand-600 dark:text-brand-400 mb-4">
+                    <i class="ri-shield-user-line text-2xl"></i>
+                </span>
+                <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Admin Setup</h1>
+                <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-2">Create the first admin account for Scatch</p>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-card border border-zinc-100 dark:border-zinc-800 p-8 transition-colors duration-300">
+                <form action="/owners/create" method="post" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Full Name</label>
+                        <input class="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
+                            type="text" placeholder="Admin Name" name="fullname">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Email</label>
+                        <input class="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
+                            type="email" placeholder="admin@scatch.com" name="email">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Password</label>
+                        <input class="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
+                            type="password" placeholder="••••••••" name="password">
+                    </div>
+                    <button type="submit" class="w-full mt-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-700 text-white font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                        Create Admin
+                    </button>
+                </form>
+                <p class="text-xs text-zinc-400 dark:text-zinc-500 text-center mt-6">
+                    Already have products? Go to <a href="/owners/admin" class="text-brand-600 dark:text-brand-400 hover:underline font-medium">Admin Panel</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <%- include('./partials/footer') %>

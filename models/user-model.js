@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-mongoose.connect("mongodb://127.0.0.1:27017/scatch");
-
 const usersSchema = mongoose.Schema({
     fullname: {
         type: String,
@@ -14,7 +12,6 @@ const usersSchema = mongoose.Schema({
         type: Array,
         default: [],
     },
-    isadmin: Boolean,
     orders: {
         type: Array,
         default: [],
@@ -24,4 +21,4 @@ const usersSchema = mongoose.Schema({
 
 });
 
-module.exports = mongoose.model('user','usersSchema');
+module.exports = mongoose.model('users',usersSchema);
