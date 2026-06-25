@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
-const config = require('config');
 
-const dbgr = require('debug')('development:mongoose');
+// Vercel par direct environment variable check karega, bina config package ke lafde ke
+const dbURI = process.env.MONGODB_URI || process.env.MONGO_URI;
 
-
-mongoose.connect(`${config.get("MONGODB_URI")}`).then(function(){
-    dbgr('connected');
-})
-.catch(function(err){
-    dbgr(err);
-})
+mongoose.connect(dbURI)
+  .then(function(){
+      console.log('Connected to MongoDB successfully!');
+  })
+  .catch(function(err){
+      console.error('MongoDB connection error:', err);
+  });
 
 module.exports = mongoose.connection;
