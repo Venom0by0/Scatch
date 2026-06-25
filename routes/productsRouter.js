@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../config/multer-config');
+const requireDb = require('../middlewares/requireDb');
 const productModel = require('../models/product-models');
 
-router.post('/create', upload.single('image'), async function(req, res) {
+router.post('/create', requireDb, upload.single('image'), async function(req, res) {
     try {
         if (!req.file) {
             return res.send("Please upload a product image.");

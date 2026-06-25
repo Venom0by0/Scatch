@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-// baki controllers ko destructure kiya
+const requireDb = require("../middlewares/requireDb");
 const { registerUser, loginUser, logout } = require("../controllers/authController");
 
 router.get("/", (req, res) => {
-  res.send("hey it's working");
+    res.send("hey it's working");
 });
 
-router.post("/register", registerUser);
-router.post("/login", loginUser); // 👈 Yeh function handle kar raha hai login
+router.post("/register", requireDb, registerUser);
+router.post("/login", requireDb, loginUser);
 router.get("/logout", logout);
 
 module.exports = router;

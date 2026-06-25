@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const requireDb = require('../middlewares/requireDb');
 const ownersModel = require("../models/owners-models");
 
 if (process.env.NODE_ENV === 'development') {
-    router.post("/create", async function (req, res) {
+    router.post("/create", requireDb, async function (req, res) {
         try {
             let owners = await ownersModel.find();
             if (owners.length > 0) {
