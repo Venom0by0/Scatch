@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/generateToken");
-const userModel = require("../models/user-model");  // <-- this was missing
+const { getAuthCookieOptions } = require("../utils/cookieOptions");
+const userModel = require("../models/user-model");
 
 
 module.exports.registerUser = async function (req, res) {
@@ -21,7 +22,7 @@ module.exports.registerUser = async function (req, res) {
                     });
 
                     let token = generateToken(user);
-                    res.cookie("token", token);
+                    res.cookie("token", token, getAuthCookieOptions());
                     res.redirect("/shop");
                 }
             });
@@ -44,7 +45,7 @@ module.exports.loginUser = async function (req, res) {
             if (err) return res.send(err.message);
             if (result) {
                 let token = generateToken(user);
-                res.cookie("token", token);
+                res.cookie("token", token, getAuthCookieOptions());
                 res.redirect("/shop");
             }
             else {
@@ -58,9 +59,6 @@ module.exports.loginUser = async function (req, res) {
 
 // Logout function ko export karein
 module.exports.logout = function (req, res) {
-    // 1. "token" naam ki cookie ko clear/delete karein
-    res.clearCookie("token");
-
-    // 2. User ka session clear karke ya direct home page par redirect karein
+    res.clearCookie("token", getAuthCookieOptions());
     res.redirect("/");
 };

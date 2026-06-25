@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const userModel = require("../models/user-model");
+const { getAuthCookieOptions } = require("../utils/cookieOptions");
 
 module.exports = async function (req, res, next) {
     // 1. Fix: req.cookies.token check sahi hai
@@ -13,7 +14,7 @@ module.exports = async function (req, res, next) {
         let user = await userModel.findOne({ email: decoded.email }).select("-password");
 
         if (!user) {
-            res.clearCookie("token");
+            res.clearCookie("token", getAuthCookieOptions());
             req.flash("error", "User not found. Please login again.");
             return res.redirect('/');
         }
@@ -21,7 +22,7 @@ module.exports = async function (req, res, next) {
         req.user = user;
         next();
     } catch (err) {
-        res.clearCookie("token");
+        res.clearCookie("token", getAuthCookieOptions());
         req.flash("error", "Something went wrong.");
         return res.redirect('/');
     }

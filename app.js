@@ -1,4 +1,4 @@
-require("dotenv").config(); // Sabse upar hona chahiye
+require("dotenv").config();
 
 const express = require('express');
 const app = express();
@@ -6,37 +6,35 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const expressSession = require('express-session');
 const flash = require('connect-flash');
-const MongoStore = require('connect-mongo'); // Import bilkul clean hai
+const MongoStore = require('connect-mongo').MongoStore;
 
 const ownersRouter = require("./routes/ownersRouter");
 const productsRouter = require("./routes/productsRouter");
 const usersRouter = require("./routes/usersRouter");
 const indexRouter = require("./routes/index");
-const db = require("./config/mongoose-connection");
+const { connectToDatabase } = require("./config/mongoose-connection");
+
+app.set('trust proxy', 1);
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// 🔥 BULLETPROOF STORAGE CHECK: Jo sahi chalega, wahi options select honge
 let sessionStore;
-if (MongoStore && typeof MongoStore.create === 'function') {
-    // Agar modern v4/v5 version chal raha hai
+const mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+if (mongoUrl && MongoStore && typeof MongoStore.create === 'function') {
     sessionStore = MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI || process.env.MONGO_URI,
-        ttl: 14 * 24 * 60 * 60
-    });
-} else if (typeof MongoStore === 'function') {
-    // Agar purana v3 version fallback chal raha hai
-    sessionStore = new MongoStore({
-        mongooseConnection: db,
-        ttl: 14 * 24 * 60 * 60
+        mongoUrl,
+        ttl: 14 * 24 * 60 * 60,
     });
 } else {
-    // Agar dono fail ho jayein (taaki app crash na ho)
-    console.log("Warning: MongoStore configuration bypassed to prevent crash.");
+    console.warn('Warning: Mongo session store unavailable. Using memory store (not suitable for production).');
     sessionStore = null;
 }
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(
     expressSession({
@@ -44,11 +42,11 @@ app.use(
         saveUninitialized: false,
         secret: process.env.EXPRESS_SESSION_SECRET || "fallbackSecretKey",
         cookie: {
-            secure: process.env.NODE_ENV === 'production', // Local par HTTP support karega, Vercel par HTTPS
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: 24 * 60 * 60 * 1000
+            secure: isProduction,
+            sameSite: isProduction ? 'lax' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000,
         },
-        ...(sessionStore && { store: sessionStore }) // Sirf tab attach hoga agar storage engine safe ho
+        ...(sessionStore && { store: sessionStore }),
     })
 );
 
@@ -56,13 +54,23 @@ app.use(flash());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use('/', indexRouter); 
+app.use(async function (req, res, next) {
+    try {
+        await connectToDatabase();
+        next();
+    } catch (err) {
+        console.error('Database unavailable:', err.message);
+        res.status(503).send('Service temporarily unavailable. Please try again in a moment.');
+    }
+});
+
+app.use('/', indexRouter);
 app.use('/owners', ownersRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
 
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(3000, () => {
+    app.listen(3000, function () {
         console.log("Server is running on port 3000");
     });
 }
