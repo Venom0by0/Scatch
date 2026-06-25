@@ -27,16 +27,21 @@ app.use(
     })
 );
 app.use(flash());
-app.use(express.static(path.join(__dirname,"public")));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// 👇 YEH VALI LINE MISSING THI, ISE ADD KAREIN
 app.use('/', indexRouter); 
 
 app.use('/owners', ownersRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
-});
+// Local machine ke liye listen chalega, par Vercel isko bypass kar sakta hai
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3000, () => {
+        console.log("Server is running on port 3000");
+    });
+}
+
+// 👈 YEH SABSE CRITICAL HAI: Vercel serverless function ke liye app export hona zaroori hai
+module.exports = app;
