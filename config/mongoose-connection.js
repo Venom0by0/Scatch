@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
-// Vercel par direct environment variable check karega, bina config package ke lafde ke
-const dbURI = process.env.MONGODB_URI || process.env.MONGO_URI;
+require("dotenv").config(); 
+
+const dbURI = process.env.MONGODB_URI || process.env.MONGO_URI || "mongodb://127.0.0.1:27017/scatch"; 
 
 mongoose.connect(dbURI)
   .then(function(){
